@@ -1,18 +1,20 @@
 import React from 'react';
 import './SearchBar.css';
 
-
-
 class SearchBar extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       term: '',
       location: '',
       sortBy: 'best_match'
     };
+
     this.handleTermChange = this.handleTermChange.bind(this);
     this.handleLocationChange = this.handleLocationChange.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+    
     this.sortByOptions = {
       'Best Match': 'best_match',
       'Highest Rated': 'rating',
@@ -20,12 +22,11 @@ class SearchBar extends React.Component {
     };
   }
 
-  getSortByOptions(sortByOption) {
-    if (sortByOption === this.state.sortBy) {
-      return 'Active';
-    } else {
-      return '';
-    }
+  getSortByClass(sortByOption) {
+    if (this.state.sortBy === sortByOption) {
+      return 'active';
+    } 
+    return '';
   }
 
   handleSortByChange(sortByOption) {
@@ -46,10 +47,19 @@ class SearchBar extends React.Component {
     });
   }
 
+  handleSearch(event) {
+    this.props.searchYelp(this.state.term, this.state.location, this.state.sortBy);
+    event.preventDefault();
+  }
+
   renderSortByOptions() {
     return Object.keys(this.sortByOptions).map(sortByOption => {
       let sortByOptionValue = this.sortByOptions[sortByOption];
-      return <li className={getSortByClass(sortByOptionValue)} key={sortByOptionValue} onClick={this.handleSortByChange.bind(this, sortByOptionValue)}>{sortByOption}</li>;
+      return (<li className={this.getSortByClass(sortByOptionValue)} 
+                 key={sortByOptionValue}  
+                 onClick={this.handleSortByChange.bind(this, sortByOptionValue)}>
+                {sortByOption}
+              </li>);
     });
   }
 
@@ -62,11 +72,11 @@ class SearchBar extends React.Component {
           </ul>
         </div>
         <div className="SearchBar-fields">
-          <input onChange={handleTermChange()} placeholder="Search Businesses" />
-          <input onChange={handleLocationChange()} placeholder="Where?" />
+          <input placeholder="Search Businesses" onChange={this.handleTermChange} />
+          <input placeholder="Where?" onChange={this.handleLocationChange} />
         </div>
         <div className="SearchBar-submit">
-          <a href="">Let's Go</a>
+          <a onClick={this.handleSearch}>Let's Go</a>
         </div>
       </div>
     );
